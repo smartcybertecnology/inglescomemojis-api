@@ -1,6 +1,6 @@
-// A lógica que será executada no Vercel como uma função Serverless
+// CÓDIGO FINAL E COMPLETO para api/inglescomemojis-api.js (Vercel Serverless Function)
 
-// Lista de 50 palavras/emojis/opções para o jogo "Inglês com Emojis"
+// Lista completa de 50 palavras/emojis/opções para o jogo "Inglês com Emojis"
 const todasAsQuestoes = [
     { en: "Dog", pt: "cachorro", emoji: "🐶", opcoes: ["gato", "cachorro", "peixe", "pássaro"] },
     { en: "Cat", pt: "gato", emoji: "🐱", opcoes: ["cachorro", "gato", "leão", "tigre"] },
@@ -54,7 +54,10 @@ const todasAsQuestoes = [
     { en: "Crown", pt: "coroa", emoji: "👑", opcoes: ["cetro", "trono", "rainha", "coroa"] }
 ];
 
-// Função utilitária para misturar um array (Algoritmo Fisher-Yates)
+/**
+ * Função utilitária para misturar um array (Algoritmo Fisher-Yates)
+ * @param {Array} array 
+ */
 function shuffleArray(array) {
     for (let i = array.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1));
@@ -64,6 +67,23 @@ function shuffleArray(array) {
 
 // Handler da função Serverless do Vercel
 module.exports = (req, res) => {
+    
+    // --- Configuração de Segurança CORS ---
+    // Define o domínio PERMITIDO para acesso.
+    const DOMINIO_PERMITIDO = 'https://playjogosgratis.com';
+    
+    // Configura o cabeçalho para permitir SOMENTE o domínio definido acima
+    res.setHeader('Access-Control-Allow-Origin', DOMINIO_PERMITIDO);
+    res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+
+    // Trata requisições OPTIONS (CORS Preflight)
+    if (req.method === 'OPTIONS') {
+        res.status(204).end(); // 204 No Content para OPTIONS
+        return;
+    }
+    // ------------------------------------
+
     // Define os limites de questões por dificuldade
     const limites = {
         facil: 15,
@@ -75,11 +95,11 @@ module.exports = (req, res) => {
     const dificuldade = req.query.dificuldade || 'facil';
     const limite = limites[dificuldade] || limites.facil;
 
-    // 1. Mistura todas as questões disponíveis
+    // 1. Mistura todas as questões disponíveis (para garantir aleatoriedade)
     let questoesMisturadas = [...todasAsQuestoes];
     shuffleArray(questoesMisturadas);
 
-    // 2. Seleciona o número exato de questões para a dificuldade
+    // 2. Seleciona o número exato de questões para a dificuldade e formata
     const questoesDoJogo = questoesMisturadas.slice(0, limite).map(q => {
         // 3. Mistura as opções de resposta para cada questão
         let opcoesMisturadas = [...q.opcoes];
@@ -88,15 +108,10 @@ module.exports = (req, res) => {
         return {
             emoji: q.emoji,
             en: q.en,
-            pt: q.pt, // Resposta correta em PT
-            opcoes: opcoesMisturadas // Opções em PT (incluindo a correta)
+            pt: q.pt, 
+            opcoes: opcoesMisturadas
         };
     });
-
-    // Configura o cabeçalho para permitir requisições de qualquer origem (CORS)
-    res.setHeader('Access-Control-Allow-Origin', '*');
-    res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
-    res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
 
     // Retorna as questões em formato JSON
     res.status(200).json({
