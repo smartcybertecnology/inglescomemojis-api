@@ -1,4 +1,4 @@
-// CÓDIGO FINAL E COMPLETO para api/inglescomemojis-api.js (Vercel Serverless Function)
+// CÓDIGO FINAL E COMPLETO para api/api.js (Vercel Serverless Function)
 
 // Lista completa de 50 palavras/emojis/opções para o jogo "Inglês com Emojis"
 const todasAsQuestoes = [
@@ -77,7 +77,7 @@ module.exports = (req, res) => {
     res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
     res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
 
-    // Trata requisições OPTIONS (CORS Preflight)
+    // **CRUCIAL PARA CORRIGIR O ERRO:** Trata requisições OPTIONS (CORS Preflight)
     if (req.method === 'OPTIONS') {
         res.status(204).end(); // 204 No Content para OPTIONS
         return;
@@ -113,7 +113,7 @@ module.exports = (req, res) => {
         };
     });
 
-    // Retorna as questões em formato JSON
+    // Retorna a resposta (só executa se não for OPTIONS)
     res.status(200).json({
         dificuldade: dificuldade,
         total: questoesDoJogo.length,
